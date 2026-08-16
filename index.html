@@ -184,6 +184,19 @@
       </div>
       <p class="note">Расчёт ориентировочный: белок 1,8 г/кг, жиры 25% калорий, остальное — углеводы. Не заменяет консультацию врача или диетолога.</p>
     </section>
+
+    <section class="card">
+      <h2>Норма воды в сутки</h2>
+      <div class="result-head">
+        <span class="bmi-value" id="waterValue">—</span>
+        <span class="badge" id="waterGlasses" style="background: var(--accent)"></span>
+      </div>
+      <div class="facts">
+        <div class="fact"><b id="waterBase">—</b><span>Базовая норма — 30 мл на кг веса</span></div>
+        <div class="fact"><b id="waterBonus">—</b><span>Надбавка за активность</span></div>
+      </div>
+      <p class="note">Учитывается вся жидкость за день, включая воду из супов, чая и других напитков. В жару, при болезни с температурой и при грудном вскармливании потребность выше. При болезнях почек и сердца норму воды определяет врач.</p>
+    </section>
   </div>
 </div>
 
@@ -211,6 +224,9 @@
   // Границы шкалы ИМТ на графике
   var SCALE_MIN = 15, SCALE_MAX = 40;
 
+  var WATER_ML_PER_KG = 30;   // базовая норма жидкости
+  var GLASS_ML = 250;         // объём стакана для наглядности
+
   var els = {
     form: document.getElementById('form'),
     sex: document.getElementById('sex'),
@@ -228,7 +244,11 @@
     weightDelta: document.getElementById('weightDelta'),
     calorieRows: document.getElementById('calorieRows'),
     bmrValue: document.getElementById('bmrValue'),
-    tdeeValue: document.getElementById('tdeeValue')
+    tdeeValue: document.getElementById('tdeeValue'),
+    waterValue: document.getElementById('waterValue'),
+    waterGlasses: document.getElementById('waterGlasses'),
+    waterBase: document.getElementById('waterBase'),
+    waterBonus: document.getElementById('waterBonus')
   };
 
   var sex = 'male';
@@ -262,8 +282,34 @@
     };
   }
 
+  // Дополнительная жидкость на потери с потом при тренировках
+  function waterBonusMl(activity) {
+    if (activity >= 1.9) return 1000;
+    if (activity >= 1.725) return 750;
+    if (activity >= 1.55) return 500;
+    if (activity >= 1.375) return 250;
+    return 0;
+  }
+
+  function water(weightKg, activity) {
+    var base = weightKg * WATER_ML_PER_KG;
+    var bonus = waterBonusMl(activity);
+    return { base: base, bonus: bonus, total: base + bonus };
+  }
+
   function num(value) {
     return Math.round(value).toLocaleString('ru-RU');
+  }
+
+  function litres(ml) {
+    return (ml / 1000).toFixed(1).replace('.', ',') + ' л';
+  }
+
+  function plural(n, one, few, many) {
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return one;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+    return many;
   }
 
   function readInputs() {
@@ -343,6 +389,14 @@
         '<td class="num">' + mac.protein + ' / ' + mac.fat + ' / ' + mac.carbs + '</td>' +
       '</tr>';
     }).join('');
+
+    var w = water(d.weight, d.activity);
+    var glasses = Math.round(w.total / GLASS_ML);
+    els.waterValue.textContent = litres(w.total);
+    els.waterGlasses.textContent = glasses + ' ' + plural(glasses, 'стакан', 'стакана', 'стаканов') +
+      ' по ' + GLASS_ML + ' мл';
+    els.waterBase.textContent = litres(w.base);
+    els.waterBonus.textContent = w.bonus ? '+' + litres(w.bonus) : 'нет';
 
     els.results.classList.remove('hidden');
   }

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приём у Апюса — запись</title>
+<meta name="description" content="Шуточный проект: онлайн-запись на приём к Апюсу. Приём по настроению, очередь по важности вопроса.">
+<style>
+  :root {
+    --bg: #fff8f0;
+    --bg-alt: #ffffff;
+    --ink: #2b2118;
+    --muted: #7d6b5b;
+    --line: #ecdccb;
+    --brand: #e0733b;
+    --brand-dark: #c25a26;
+    --brand-soft: #fdeade;
+    --accent: #3f7d6b;
+    --shadow: 0 10px 30px rgba(80, 50, 20, .10);
+    --radius: 18px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #191410;
+      --bg-alt: #221b16;
+      --ink: #f6ece2;
+      --muted: #b8a595;
+      --line: #382d24;
+      --brand: #f28b52;
+      --brand-dark: #ffa76d;
+      --brand-soft: #33241a;
+      --accent: #6fbfa5;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+  section { padding: 56px 0; }
+  h2 { font-size: 28px; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 28px; }
+
+  /* ——— Шапка ——— */
+  header {
+    background: radial-gradient(1200px 400px at 50% -10%, var(--brand-soft), transparent 70%);
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+    padding: 64px 0 56px;
+  }
+  .stamp {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 2px dashed var(--brand);
+    border-radius: 999px;
+    color: var(--brand-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+    margin-bottom: 20px;
+  }
+  h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.1; margin: 0 0 14px; }
+  h1 .name { color: var(--brand); white-space: nowrap; }
+  .tagline { font-size: 19px; color: var(--muted); max-width: 620px; margin: 0 auto 28px; }
+  .cta {
+    display: inline-block;
+    background: var(--brand);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 15px 34px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .cta:hover { background: var(--brand-dark); }
+  .cta-note { display: block; margin-top: 12px; font-size: 14px; color: var(--muted); }
+
+  /* ——— Карточки ——— */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .card .emoji { font-size: 30px; display: block; margin-bottom: 10px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .price { display: block; margin-top: 12px; font-weight: 700; color: var(--accent); font-size: 15px; }
+
+  /* ——— Шаги ——— */
+  .steps { counter-reset: step; display: grid; gap: 16px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    flex: 0 0 36px;
+    height: 36px;
+    display: grid; place-items: center;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    border-radius: 50%;
+    font-weight: 700;
+  }
+  .step b { display: block; }
+  .step span { color: var(--muted); font-size: 15px; }
+
+  /* ——— Часы приёма ——— */
+  .hours { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; overflow: hidden;
+           background: var(--bg-alt); border: 1px solid var(--line); border-radius: var(--radius); }
+  .hours div { padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .hours b { display: block; font-size: 15px; }
+  .hours span { color: var(--muted); font-size: 15px; }
+
+  /* ——— Правила ——— */
+  ul.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ul.rules li { padding-left: 30px; position: relative; color: var(--muted); }
+  ul.rules li::before { content: "🐾"; position: absolute; left: 0; }
+  ul.rules b { color: var(--ink); }
+
+  /* ——— Форма ——— */
+  #zapis { background: var(--brand-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .form-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 10px;
+    overflow: hidden;
+  }
+  iframe { display: block; width: 100%; border: 0; min-height: 780px; }
+  .form-fallback { text-align: center; padding: 8px 0 4px; font-size: 15px; color: var(--muted); }
+  .form-fallback a { color: var(--brand-dark); }
+
+  /* ——— Журнал ——— */
+  .journal {
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    background: var(--bg-alt); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow);
+  }
+  .journal .emoji { font-size: 38px; }
+  .journal div { flex: 1 1 260px; }
+  .journal a { color: var(--brand-dark); font-weight: 600; }
+
+  footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
+  footer p { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="stamp">Приём строго по записи</span>
+    <h1>Запись на приём<br>к <span class="name">Апюсу</span></h1>
+    <p class="tagline">
+      Апюс выслушает, посмотрит на вас долгим взглядом и всё поймёт.
+      Свободных мест мало, потому что большую часть дня Апюс занят — он спит.
+    </p>
+    <a class="cta" href="#zapis">Записаться на приём</a>
+    <span class="cta-note">Первичная консультация бесплатна. Повторная — тоже, но с осуждением.</span>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Услуги</h2>
+    <p class="lead">Апюс принимает по широкому кругу вопросов — от бытовых до экзистенциальных.</p>
+    <div class="cards">
+      <article class="card">
+        <span class="emoji">🧐</span>
+        <h3>Экспертное мнение</h3>
+        <p>Вы излагаете суть дела, Апюс молча смотрит. К концу приёма вы сами понимаете, где ошиблись.</p>
+        <span class="price">15 минут · бесплатно</span>
+      </article>
+      <article class="card">
+        <span class="emoji">🛋️</span>
+        <h3>Сеанс поддержки</h3>
+        <p>Апюс садится рядом и ничего не говорит. Клинически доказано: помогает лучше советов.</p>
+        <span class="price">до победного · бесплатно</span>
+      </article>
+      <article class="card">
+        <span class="emoji">🧭</span>
+        <h3>Стратегическая сессия</h3>
+        <p>Апюс смотрит в окно сорок минут, затем уходит. Направление вы выбираете сами.</p>
+        <span class="price">40 минут · 1 вкусняшка</span>
+      </article>
+      <article class="card">
+        <span class="emoji">📜</span>
+        <h3>Разбор полётов</h3>
+        <p>Разбираем, как вы дошли до жизни такой. Апюс не перебивает — он выше этого.</p>
+        <span class="price">1 час · 2 вкусняшки</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Как проходит приём</h2>
+    <p class="lead">Процедура отработана годами и не подлежит обсуждению.</p>
+    <div class="steps">
+      <div class="step"><b>Заполняете форму</b><span>Указываете имя, контакты и суть вопроса. Чем честнее — тем лучше.</span></div>
+      <div class="step"><b>Ждёте подтверждения</b><span>Апюс изучает заявку в удобное ему время. Обычно это глубокая ночь.</span></div>
+      <div class="step"><b>Приходите вовремя</b><span>Опоздавших Апюс принимает, но всем своим видом показывает, что запомнил.</span></div>
+      <div class="step"><b>Уходите просветлённым</b><span>Или хотя бы поглаженным. Гарантируется одно из двух.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Часы приёма</h2>
+    <p class="lead">Расписание ориентировочное и зависит от настроения принимающей стороны.</p>
+    <div class="hours">
+      <div><b>Понедельник — пятница</b><span>с 11:00, если проснётся</span></div>
+      <div><b>Обеденный перерыв</b><span>13:00 — 17:00</span></div>
+      <div><b>Суббота и воскресенье</b><span>приём душевный, но короткий</span></div>
+      <div><b>Вне очереди</b><span>при наличии вкусного</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Что взять с собой</h2>
+    <p class="lead">Небольшой список, который сильно повышает шансы на успешный приём.</p>
+    <ul class="rules">
+      <li><b>Вопрос по существу.</b> Апюс чувствует, когда вы тянете время.</li>
+      <li><b>Терпение.</b> Приём начнётся тогда, когда начнётся.</li>
+      <li><b>Угощение.</b> Формально не обязательно. Фактически обязательно.</li>
+      <li><b>Отсутствие ожиданий.</b> Так приятнее и вам, и Апюсу.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="zapis">
+  <div class="wrap">
+    <h2>Записаться на приём</h2>
+    <p class="lead">Заполните форму — заявка уйдёт прямиком в журнал записей Апюса.</p>
+    <div class="form-box">
+      <iframe
+        src="https://forms.yandex.ru/u/6a831f72e010dbfa888fa2eb/?iframe=1"
+        name="ya-form-6a831f72e010dbfa888fa2eb"
+        title="Форма записи на приём"
+        loading="lazy"></iframe>
+      <p class="form-fallback">
+        Форма не загрузилась? Она откроется
+        <a href="https://forms.yandex.ru/u/6a831f72e010dbfa888fa2eb/" target="_blank" rel="noopener">отдельной страницей</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Журнал записей</h2>
+    <p class="lead">Все заявки стекаются в одну таблицу — по ней Апюс планирует свой тяжёлый день.</p>
+    <div class="journal">
+      <span class="emoji">📒</span>
+      <div>
+        <b>Запись на приём (тест).xlsx</b>
+        <p style="margin:4px 0 0;color:var(--muted);font-size:15px">
+          Таблица с заявками лежит на Яндекс Диске и пополняется через интеграцию Яндекс Форм.
+        </p>
+      </div>
+      <a href="https://disk.yandex.ru/i/HGAuuZE0uKM59w" target="_blank" rel="noopener">Открыть таблицу →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Шуточный проект. Апюс не является лицензированным специалистом ни в одной из областей.</p>
+    <p>Сделано на GitHub Pages в учебных целях 🐾</p>
+  </div>
+</footer>
+
+<script src="https://yastatic.net/s3/frontend/forms/_/embed.js"></script>
+</body>
+</html>
